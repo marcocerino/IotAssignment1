@@ -4,9 +4,9 @@ class Anemometer(object):
 	"""docstring for Anemometer"""
 	def __init__(self):
 		super(Anemometer, self).__init__()
-		
+
 	def getWindDirection(self):
-		return randint(0,360,1)
+		return str(randint(0,360,1)[0])
 
 	def getWindIntensity(self):
-		return randint(0,100,1)
+		return str(randint(0,100,1)[0])

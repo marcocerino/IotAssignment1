@@ -6,7 +6,7 @@ from thermometer import Thermometer
 
 class Sensors(object):
 	"""docstring for Sensors"""
-	def __init__(self,):
+	def __init__(self):
 		super(Sensors, self).__init__()
 		#create the sensore
 		self.anomometer=Anemometer()
@@ -16,10 +16,10 @@ class Sensors(object):
 
 
 	def getValue(self):
-		temp = thermometer.getTemperature();
-		hum = hygrometer.getHumidity()
-		wind_dir = anomometer.getWindDirection()
-		wind_int = anomometer.getWindIntensity()
-		rain = rain_gauge.getRain()
+		temp = self.thermometer.getTemperature();
+		hum = self.hygrometer.getHumidity()
+		wind_dir = self.anomometer.getWindDirection()
+		wind_int = self.anomometer.getWindIntensity()
+		rain = self.rain_gauge.getRain()
 		return temp,hum,wind_dir,wind_int,rain
 

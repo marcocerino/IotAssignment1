@@ -6,4 +6,4 @@ class Hygrometer(object):
 		super(Hygrometer, self).__init__()
 
 	def getHumidity(self):
-		return randint(0,100,1)
+		return str(randint(0,100,1)[0])

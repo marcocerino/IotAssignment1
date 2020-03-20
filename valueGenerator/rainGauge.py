@@ -6,4 +6,4 @@ class RainGauge(object):
 		super(RainGauge, self).__init__()
 
 	def getRain(self):
-		return randint(0,50,1)
+		return str(randint(0,50,1)[0])
