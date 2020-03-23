@@ -9,7 +9,7 @@ class Sensors(object):
 	def __init__(self):
 		super(Sensors, self).__init__()
 		#create the sensore
-		self.anomometer=Anemometer()
+		self.anemometer=Anemometer()
 		self.hygrometer=Hygrometer()
 		self.rain_gauge=RainGauge()
 		self.thermometer=Thermometer()
@@ -18,8 +18,8 @@ class Sensors(object):
 	def getValue(self):
 		temp = self.thermometer.getTemperature();
 		hum = self.hygrometer.getHumidity()
-		wind_dir = self.anomometer.getWindDirection()
-		wind_int = self.anomometer.getWindIntensity()
+		wind_dir = self.anemometer.getWindDirection()
+		wind_int = self.anemometer.getWindIntensity()
 		rain = self.rain_gauge.getRain()
 		return temp,hum,wind_dir,wind_int,rain
 
