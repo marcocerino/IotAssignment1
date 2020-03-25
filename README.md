@@ -1,8 +1,8 @@
 # IotAssignment1
 This directory contains my delivery for the assignment #1 for the 2020 IOT course for the  Engineering in Computer Science master degree at Sapienza University of Roma.
 
-An hands on tutorial on how to setup and run my system can be found at this blog post:
-https://iotcerino.blogspot.com/2020/03/assignment-1-mqtt-protocol.html 
+An hands on tutorial on how to setup and run my system can be found at the following linkedin blog post:
+https://www.linkedin.com/posts/marco-cerino-696369197_activity-6648639211438120960-Enqx
 
 A video hands-on can be found at the following link:
 https://youtu.be/DpCm8Tyl5Wo
