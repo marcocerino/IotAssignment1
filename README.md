@@ -1,4 +1,5 @@
-# IotAssignment1
+# IotAssignment
+
 This directory contains my delivery for the assignment #1 for the 2020 IOT course for the  Engineering in Computer Science master degree at Sapienza University of Roma.
 
 An hands on tutorial on how to setup and run my system can be found at the following linkedin blog post:
