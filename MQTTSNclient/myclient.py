@@ -21,20 +21,14 @@ aclient = mqttsn.Client("linh", port=1885)
 aclient.registerCallback(mqttsn.Callback())
 aclient.connect()
 
-rc, topic1 = aclient.subscribe("topic1")
-print("topic id for topic1 is", topic1)
-rc, topic2 = aclient.subscribe("topic2")
-print("topic id for topic2 is", topic2)
-aclient.publish(topic1, "aaaa", qos=0)
-aclient.publish(topic2, "bbbb", qos=0)
-aclient.unsubscribe("topic1")
-aclient.publish(topic2, "bbbb", qos=0)
-aclient.publish(topic1, "aaaa", qos=0)
+
+aclient.subscribe("v1/devices/me/telemetry")
 try:
 	while(1):
 		time.sleep(2)
 		empty_queue()
 except KeyboardInterrupt:
+	print("Closing the client")
 	aclient.disconnect()
 
 
