@@ -22,7 +22,7 @@ void gen_val(char* payoff){
     int win_int = generate_random(0,100);
     int rain = generate_random(0,50);
 
-    sprintf(payoff,"Temperature: %d\nHumdity: %d\nWindDirection: %d\nWindIntensity: %d\nRain: %d\n",temp,hum,win_dir,win_int,rain);
+    sprintf(payoff,"{\"Temperature\":%d,\"Humidity\":%d,\"WindDirection\":%d,\"WindIntensity\":%d,\"RainHight\":%d}",temp,hum,win_dir,win_int,rain);
 
 }
 
