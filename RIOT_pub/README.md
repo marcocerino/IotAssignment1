@@ -1,7 +1,9 @@
 #About
+
 This directory contains a Riot application that can connect to a local MQTT-SN broker, in particular rsmb, and publish randomly generated values.
 
 #RSMB Setup
+
 1. You will need to install rsmb. It can be cloned from a git repository
 git clone https://github.com/eclipse/mosquitto.rsmb.git
 
@@ -16,6 +18,7 @@ You can just copy this file into the broker directory
 ./broker_mqtts config.conf
 
 #Setting up RIOT
+
 1. Before you can run the application, you will need to create the interface through which it can communicate with the broker. You can use the RIOT's tapsetup tool
 sudo ./RIOTDIR/dist/tools/tapsetup/tapsetup
 
@@ -30,6 +33,7 @@ make all term
 ifconfig 5 add fec0:affe::99
 
 #USAGE
+
 1. Now we can communicate with the broker, so firstly we connect to it
 con fec0:affe::1 1885
 The port number can change if you modify your broker's configuration file
