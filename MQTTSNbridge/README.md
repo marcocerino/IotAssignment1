@@ -17,3 +17,8 @@ To run such a file, the paho.mqtt library is required.
 To install it: pip install paho
 To read more about it: https://pypi.org/project/paho-mqtt/
 This program creates a client that connect directly to the my cloud-based MQTT broker, and publish the data on topic v1/devices/me/telemetry, so that these values can be shown in the web interface I've implemented.
+
+#HOW TO RUN
+
+To run this program, once your RSMB MQTT-SN broker is running you just need to run
+python bridge.py
