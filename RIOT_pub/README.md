@@ -40,3 +40,6 @@ The port number can change if you modify your broker's configuration file
 
 2. To start publishing the randomly generated values, just execute the following command
 pub_values
+The values will be published on the v1/devices/me/telemetry topic. 
+A message will have the form: 
+"{\"Temperature\":%d,\"Humidity\":%d,\"WindDirection\":%d,\"WindIntensity\":%d,\"RainHight\":%d}"

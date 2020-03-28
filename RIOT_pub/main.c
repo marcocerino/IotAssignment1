@@ -9,12 +9,13 @@
 #include <time.h>
 
 
-
-int generate_random(int l, int r) { //this will generate random number in range l and r
+//this will generate random number in range l and r
+int generate_random(int l, int r) { 
     int rand_num = (rand() % (r - l + 1)) + l;
     return rand_num;
 }
 
+//function called when asked to generate values
 void gen_val(char* payoff){
     int temp = generate_random(-50,50);
     int hum = generate_random(0,100);
