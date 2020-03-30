@@ -18,9 +18,11 @@ class MyCallback:
 	 ret= mclient.publish(payload) 			
 	 return True
 
+mqttsn_ip = input("Type the broaker IPv6 addess: ");
 
+print("connecting to the MQTT-SN broker")
 #create MQTT-SN client and connect to RSMB
-aclient = mqttsn.Client("linh", port=1885)
+aclient = mqttsn.Client("linh",host=mqttsn_ip, port=1885)
 aclient.registerCallback(MyCallback())
 aclient.connect()
 #subscribe the client to the topic the RIOT app pubs on
