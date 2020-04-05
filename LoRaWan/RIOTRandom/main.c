@@ -1,56 +1,13 @@
-#include <stdio.h>
+
 #include <string.h>
-#include <stdlib.h>
 
+#include "xtimer.h"
 
-#ifdef MODULE_SEMTECH_LORAMAC_RX
-#include "thread.h"
-#include "msg.h"
-#endif
-
-#include "shell.h"
+#include "net/loramac.h"
 #include "semtech_loramac.h"
 
-extern semtech_loramac_t loramac;
+#include "board.h"
 
-#ifdef MODULE_SEMTECH_LORAMAC_RX
-#define LORAMAC_RECV_MSG_QUEUE                   (4U)
-static msg_t _loramac_recv_queue[LORAMAC_RECV_MSG_QUEUE];
-static char _recv_stack[THREAD_STACKSIZE_DEFAULT];
-
-static void *_wait_recv(void *arg)
-{
-    msg_init_queue(_loramac_recv_queue, LORAMAC_RECV_MSG_QUEUE);
-
-    (void)arg;
-    while (1) {
-        /* blocks until something is received */
-        switch (semtech_loramac_recv(&loramac)) {
-            case SEMTECH_LORAMAC_RX_DATA:
-                loramac.rx_data.payload[loramac.rx_data.payload_len] = 0;
-                printf("Data received: %s, port: %d\n",
-                (char *)loramac.rx_data.payload, loramac.rx_data.port);
-                break;
-
-            case SEMTECH_LORAMAC_RX_LINK_CHECK:
-                printf("Link check information:\n"
-                   "  - Demodulation margin: %d\n"
-                   "  - Number of gateways: %d\n",
-                   loramac.link_chk.demod_margin,
-                   loramac.link_chk.nb_gateways);
-                break;
-
-            case SEMTECH_LORAMAC_RX_CONFIRMED:
-                puts("Received ACK from network");
-                break;
-
-            default:
-                break;
-        }
-    }
-    return NULL;
-}
-#endif
 
 
 //this will generate random number in range l and r
@@ -62,22 +19,54 @@ int generate_random(int l, int r) {
 //function called when asked to generate values
 void gen_val(char* payoff){
     int temp = generate_random(-50,50);
-    int hum = generate_random(0,100);
+    /*int hum = generate_random(0,100);
     int win_dir = generate_random(0,360);
     int win_int = generate_random(0,100);
     int rain = generate_random(0,50);
-
-    sprintf(payoff,"{\"Temperature\":%d,\"Humidity\":%d,\"WindDirection\":%d,\"WindIntensity\":%d,\"RainHight\":%d}",temp,hum,win_dir,win_int,rain);
+*/
+    sprintf(payoff,"{\"Temperature\":%d}",temp);
 
 }
 
-static int send(int argc, char**argv)
+/* Declare globally the loramac descriptor */
+semtech_loramac_t loramac;
+
+
+//need to change the EUIs and the key to your TTN device's ones
+/* Device and application informations required for OTAA activation */
+static const uint8_t deveui[LORAMAC_DEVEUI_LEN] = { 0x00, 0x81, 0xF9, 0x8E, 0xA7, 0xF8, 0x22, 0x23 };
+static const uint8_t appeui[LORAMAC_APPEUI_LEN] = { 0x70, 0xB3, 0xD5, 0x7E, 0xD0, 0x02, 0xD4, 0xC0 };
+static const uint8_t appkey[LORAMAC_APPKEY_LEN] = { 0xB0, 0xEA, 0x13, 0xFC, 0x3F, 0xF2, 0x91, 0x5E, 0x67, 0xC1, 0x74, 0x3E, 0xDF, 0xFC, 0x50, 0x57 };
+
+/* The  message to send */
+char message[400];
+
+int main(void)
 {
+    /* initialize the loramac stack */
+    semtech_loramac_init(&loramac);
+
+    /* use a fast datarate so we don't use the physical layer too much */
+    semtech_loramac_set_dr(&loramac, 5);
+
+    /* set the LoRaWAN keys */
+    semtech_loramac_set_deveui(&loramac, deveui);
+    semtech_loramac_set_appeui(&loramac, appeui);
+    semtech_loramac_set_appkey(&loramac, appkey);
+
+    /* start the OTAA join procedure */
+    puts("Starting join procedure");
+    if (semtech_loramac_join(&loramac, LORAMAC_JOIN_OTAA) != SEMTECH_LORAMAC_JOIN_SUCCEEDED) {
+        puts("Join procedure failed");
+        return 1;
+    }
+
+    puts("Join procedure succeeded");
+
     while (1) {
         /* wait 20 secs */
-        xtimer_sleep(20);
+        xtimer_sleep(5);
 
-        char message[400];
         gen_val(message);
 
         /* send the LoRaWAN message */
@@ -89,30 +78,5 @@ static int send(int argc, char**argv)
         }
     }
 
-    (void) argc;
-    (void) argv;
-
-    /* this should never be reached */
-    return 1;
-}
-
-
-/* loramac shell command handler is implemented in
-   sys/shell/commands/sc_loramac.c */
-
-static const shell_command_t shell_commands[] = {
-    {"send","send randomly generated data to TTN", send},
-    { NULL, NULL, NULL }
-};
-
-int main(void)
-{
-#ifdef MODULE_SEMTECH_LORAMAC_RX
-    thread_create(_recv_stack, sizeof(_recv_stack),
-                  THREAD_PRIORITY_MAIN - 1, 0, _wait_recv, NULL, "recv thread");
-#endif
-
-    puts("All up, running the shell now");
-    char line_buf[SHELL_DEFAULT_BUFSIZE];
-    shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
+    return 0; /* should never be reached */
 }
