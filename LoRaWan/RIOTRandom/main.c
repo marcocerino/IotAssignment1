@@ -17,14 +17,18 @@ int generate_random(int l, int r) {
 }
 
 //function called when asked to generate values
-void gen_val(char* payoff){
+void gen_val(char** payoff){
     int temp = generate_random(-50,50);
-    /*int hum = generate_random(0,100);
+    int hum = generate_random(0,100);
     int win_dir = generate_random(0,360);
     int win_int = generate_random(0,100);
     int rain = generate_random(0,50);
-*/
-    sprintf(payoff,"{\"Temperature\":%d}",temp);
+
+    sprintf(payoff[0],"{\"Temperature\":%d}",temp);
+    sprintf(payoff[1],"{\"Humidity\":%d}",hum);
+    sprintf(payoff[2],"{\"WindDirection\":%d}",win_dir);
+    sprintf(payoff[3],"{\"WindIntensity\":%d}",win_int);
+    sprintf(payoff[4],"{\"RainHeight\":%d}",rain);
 
 }
 
@@ -38,11 +42,16 @@ static const uint8_t deveui[LORAMAC_DEVEUI_LEN] = { 0x00, 0x81, 0xF9, 0x8E, 0xA7
 static const uint8_t appeui[LORAMAC_APPEUI_LEN] = { 0x70, 0xB3, 0xD5, 0x7E, 0xD0, 0x02, 0xD4, 0xC0 };
 static const uint8_t appkey[LORAMAC_APPKEY_LEN] = { 0xB0, 0xEA, 0x13, 0xFC, 0x3F, 0xF2, 0x91, 0x5E, 0x67, 0xC1, 0x74, 0x3E, 0xDF, 0xFC, 0x50, 0x57 };
 
-/* The  message to send */
-char message[400];
 
 int main(void)
 {
+    /* The  message to send */
+    char* message[5];
+    for(int i=0; i<5; i++){
+        message[i] = (char*) malloc(sizeof(char)*50);
+    }
+
+
     /* initialize the loramac stack */
     semtech_loramac_init(&loramac);
 
@@ -63,19 +72,50 @@ int main(void)
 
     puts("Join procedure succeeded");
 
+    
+    
     while (1) {
         /* wait 20 secs */
         xtimer_sleep(5);
 
         gen_val(message);
 
-        /* send the LoRaWAN message */
-        printf("Sending message: %s\n", message);
-        uint8_t ret = semtech_loramac_send(&loramac, (uint8_t *)message,
-                                           strlen(message));
-        if (ret != SEMTECH_LORAMAC_TX_DONE) {
-            printf("Cannot send message '%s', ret code: %d\n", message, ret);
+        /* send the LoRaWAN messages */
+        int j;
+        
+        for(j=0; j<2; j++){
+            printf("Sending message: %s\n", message[j]);
+            uint8_t ret = semtech_loramac_send(&loramac, (uint8_t *)message[j],
+                                                       strlen(message[j]));
+            if (ret != SEMTECH_LORAMAC_TX_DONE) {
+                    printf("Cannot send message '%s', ret code: %d\n", message[j], ret);
+            }
         }
+
+        //wait to avoid err code 13
+        xtimer_sleep(5);
+
+        for(j=2; j<4; j++){
+            printf("Sending message: %s\n", message[j]);
+            uint8_t ret = semtech_loramac_send(&loramac, (uint8_t *)message[j],
+                                               strlen(message[j]));
+            if (ret != SEMTECH_LORAMAC_TX_DONE) {
+                printf("Cannot send message '%s', ret code: %d\n", message[j], ret);
+            }
+        }
+
+
+        //wait to avoid err code 13
+        xtimer_sleep(5);
+
+        //j==4
+        printf("Sending message: %s\n", message[4]);
+        uint8_t ret = semtech_loramac_send(&loramac, (uint8_t *)message[4],
+                                               strlen(message[4]));
+        if (ret != SEMTECH_LORAMAC_TX_DONE) {
+            printf("Cannot send message '%s', ret code: %d\n", message[4], ret);
+        }
+            
     }
 
     return 0; /* should never be reached */
