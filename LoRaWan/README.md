@@ -4,3 +4,5 @@ This directory contains a RIOT application that throught the LoRaWan protocol se
 
 A blog post describing the code and how to run it is found at the following link:
 https://www.linkedin.com/posts/marco-cerino-696369197_as-an-assignment-for-the-iot-course-at-sapienza-activity-6654753650566537216-_8cT
+
+A video tutorial on how to run the experiment with one device is on YouTube: https://youtu.be/iQV-5agN_uU
