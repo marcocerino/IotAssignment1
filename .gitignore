@@ -1,0 +1,4 @@
+LoRaWan/RIOTRandom/bin
+randomMQTTSNbridge/RIOTRandom/bin
+RIOTiotlab/RIOTSensors/bin
+*.pyc
