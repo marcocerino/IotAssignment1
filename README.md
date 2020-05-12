@@ -4,7 +4,7 @@ This directory contains my delivery for the assignments for the 2020 IOT course 
 
 valueGenerator  directory contains a program that randomly generate values and publish them to a cloud-based MQTT broker
 
-randomMQTTSNbridge contains an application that thatnks to a RIOT application generate random values and publish them to a RSMB MQTT-SN broaker, and then publish them on a web interface thanks to a python program that implements a MQTT-SN to MQTT bridge. 
+randomMQTTSNbridge contains an application that thanks to a RIOT application generate random values and publish them to a RSMB MQTT-SN broaker, and then publish them on a web interface thanks to a python program that implements a MQTT-SN to MQTT bridge. 
 
 In the LoRaWan directory, the MQTT protocol was changed with LoRaWan. It contains a Riot app, that should run on the Iot-Lab's boards, and a python bridge, that connects the app to the ThingsBoard dashbord used in the other directoryes
 
