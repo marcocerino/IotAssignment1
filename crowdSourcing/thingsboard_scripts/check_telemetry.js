@@ -1,0 +1,1 @@
+return (msg.ip === undefined || msg.data === undefined);
