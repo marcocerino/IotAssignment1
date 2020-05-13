@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edge based Human Activity Recognition</title>  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Marco Cerino">
+  <meta charset="UTF-8">
+</head>
+<body>
+
+  <h2> Your public IP address is : </h1>
+  <h2 id="ip"> ip address</h2>
+  <!--Get device public ip address -->
+  <script type="application/javascript">
+  function getIP(json) {
+    let ip = document.getElementById("ip");
+    ip.innerHTML = json.ip;
+  }
+  </script>
+
+  <script type="application/javascript" src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
+
+
+  <h1>Linear Accelerometer raw data</h1>
+  <div id="lad">No data</div>
+  <div id="k"> Can't compute standard deviation</div>
+  <h2 id="stat"> Wait for status</h2>
+
+  <script>
+    let lad = document.getElementById('lad');
+    let k = document.getElementById('k');
+    let stat = document.getElementById('stat');
+    let ip = document.getElementById('ip').innerHTML;
+
+    //thingsboard device access token
+    var token = "jiR0GCFal3uLslYtG3Ie";
+
+    //check sensor on device
+    if ( 'LinearAccelerationSensor' in window ) {
+      //a window is formed by 4 relevation 
+      var win = 4;
+
+      //array for saving retrived data locally
+      var x_array = [];
+      var y_array = [];
+      var z_array = [];
+
+      var i = 0;
+
+      //initialize sensor with frequency 1Hz
+      let las = new LinearAccelerationSensor({frequency: 1});
+      //function exectued at each detection
+      las.addEventListener('reading', function(la) {
+        // write values on html page
+        lad.innerHTML = 'x: ' + la.target.x + '<br> y: ' + la.target.y + '<br> z: ' + la.target.z;
+        console.log('x: ' + la.target.x + '<br> y: ' + la.target.y + '<br> z: ' + la.target.z);
+        if(i<win){
+          //save values in the arrays
+          x_array[i] = Math.abs(la.target.x);
+          y_array[i] = Math.abs(la.target.y);
+          z_array[i] = Math.abs(la.target.z);
+          console.log("i:"+i);
+          i++;
+        }else{
+          //compute standard deviation
+          var j;
+          
+          //l_sma = 1/win * sum(x_i+y_i+z_i)
+          var l_sma = 0;
+          for(j=0; j<win; j++){
+            l_sma += x_array[j] + y_array[j] + z_array[j]
+          }
+          l_sma /= win;
+
+
+          var sosd=0;
+          //sosd = (sum(x_i+y_i+z_i - l_sma)^2 / win)^1/2
+          for(j=0; j<win; j++){
+            sosd += Math.pow(x_array[j] + y_array[j] + z_array[j] - l_sma,2);
+          }
+          sosd /= win;
+          sosd = Math.sqrt(sosd);
+          //print standard deviation on html page
+          k.innerHTML = "standard deviation: " + sosd;
+
+          //empirical treshold for standard deviation is 0.5
+          if(sosd<0.5){
+            stat.innerHTML = "Still";
+          }
+          else{
+            stat.innerHTML = "Moving";
+          }
+
+          //cerate message to be sent 
+          var msg = "{\"user\":" + ip +",\"status\":\""+stat.innerHTML+"\"}";
+          console.log("msg"+msg);
+
+          //TODO: send the message
+
+          const Http = new XMLHttpRequest();
+          const url= "https://demo.thingsboard.io/api/v1/jiR0GCFal3uLslYtG3Ie/telemetry";
+          Http.open("POST",url);
+          Http.send(msg);
+
+          //restert the loop
+          i=0;
+          x_array[i] = Math.abs(la.target.x);
+          y_array[i] = Math.abs(la.target.y);
+          z_array[i] = Math.abs(la.target.z);
+        }
+      });
+      //start the sensor
+      las.start();
+    }
+
+    //error messgae
+    else lad.innerHTML = 'Linear Accelerometer not supported';
+  </script>
+
+  <p> To see all the status sent in the last hour go to this <a href="https://demo.thingsboard.io:/dashboard/2169c140-9443-11ea-9a66-358c6522b855?publicId=d2ff5950-6a96-11ea-8e0a-7d0ef2a682d3"> dashboard </a> developed thank to <a href="https://thingsboard.io">ThingsBoard</a> </p>
+
+</body>
+</html>

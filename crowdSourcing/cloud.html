@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cloud based Human Activity Recognition</title>  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Ruadhan O'Donoghue">
+  <meta charset="UTF-8">
+</head>
+<body>
+
+  <h2>Your local IP address is: </h2>
+  <h2 id="ip"> ip address</h2>
+  <script type="application/javascript">
+  function getIP(json) {
+    let ip = document.getElementById("ip");
+    ip.innerHTML = json.ip;
+  }
+  </script>
+
+  <script type="application/javascript" src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
+
+
+  <h1>Linear Accelerometer raw data</h1>
+  <div id="lad">No data</div>
+  <h2 id="stat"> To see all the data sent in the last hour with their respctive status, go to the following <a href="https://demo.thingsboard.io:/dashboard/b61584a0-9466-11ea-9a66-358c6522b855?publicId=d2ff5950-6a96-11ea-8e0a-7d0ef2a682d3">dashboard</a> developed thanks to <a href="https://thingsboard.io">ThingsBoard</a></h2>
+  <h3 id="msg"> message </h3>
+  <script>
+    let lad = document.getElementById('lad');
+    let stat = document.getElementById('stat');
+    let ip = document.getElementById('ip').innerHTML;
+    let message = document.getElementById('msg');
+
+    if ( 'LinearAccelerationSensor' in window ) {
+      var win = 4;
+      var x_array = [];
+      var y_array = [];
+      var z_array = [];
+      var i = 0;
+
+      //initialize sensor with frequency 1Hz
+      let las = new LinearAccelerationSensor({frequency: 1});
+      las.addEventListener('reading', function(la) {
+      	//print value on html page
+        lad.innerHTML = 'x: ' + la.target.x + '<br> y: ' + la.target.y + '<br> z: ' + la.target.z;
+        console.log('x: ' + la.target.x + '<br> y: ' + la.target.y + '<br> z: ' + la.target.z);
+        if(i<win){
+        	//save values in array
+          x_array[i] = Math.abs(la.target.x);
+          y_array[i] = Math.abs(la.target.y);
+          z_array[i] = Math.abs(la.target.z);
+          console.log("i:"+i);
+          i++;
+        }else{
+        	//create message to be sent to thingsboard
+          var msg = "{\"ip\":" + ip +",\n\"data\":[\n"
+          			+"{\"x\":"+x_array[0]+",\"y\":"+y_array[0]+",\"z\":"+z_array[0]+"},\n"
+          			+"{\"x\":"+x_array[1]+",\"y\":"+y_array[1]+",\"z\":"+z_array[1]+"},\n"
+          			+"{\"x\":"+x_array[2]+",\"y\":"+y_array[2]+",\"z\":"+z_array[2]+"},\n"
+          			+"{\"x\":"+x_array[3]+",\"y\":"+y_array[3]+",\"z\":"+z_array[3]+"}\n"
+          			+"]\n}";
+          console.log(msg);
+          message.innerHTML = msg;
+
+          //TODO: send the message
+          const Http = new XMLHttpRequest();
+          const url= "https://demo.thingsboard.io/api/v1/avwT7Z0xtZAvmhO59kd5/telemetry";
+          Http.open("POST",url);
+          Http.send(msg);
+
+          //restart the time window
+          i=0;
+
+          x_array[i] = Math.abs(la.target.x);
+          y_array[i] = Math.abs(la.target.y);
+          z_array[i] = Math.abs(la.target.z);
+        }
+      });
+      //start sensor
+      las.start();
+    }
+    //error messgae
+    else lad.innerHTML = 'Linear Accelerometer not supported';
+  </script>
+
+</body>
+</html>
