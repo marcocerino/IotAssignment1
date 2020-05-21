@@ -13,3 +13,6 @@ In the test_file directory there are some files and scripts I've used during dev
 
 The web page can ba accees via the following link:
 https://marcocerino.github.io/accelerometer/ 
+
+A video demostration of the app is on YouTube:
+https://youtu.be/8cut0xZeGsw
